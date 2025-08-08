@@ -140,4 +140,21 @@ class CatalogoArte:
         """
         self.cargar_datos()
 
-        pass
+        while True:
+            print("\n--- Menú Principal ---")
+            print("1. Búsqueda de obras por departamentos")
+            print("2. Búsqueda de obras por nacionalidad del artista")
+            print("3. Búsqueda de obras por nombre del artista")
+            print("4. Salir")
+
+            opcion = input("Seleccione una opción: ")
+
+            if opcion == '1':
+                self.buscar_por_departamento()
+            elif opcion =='2':
+                self.buscar_por_nacionalidad()
+            elif opcion == '3':
+                self.buscar_por_artista()
+            elif opcion == '4':
+                print('Adios')
+                break
