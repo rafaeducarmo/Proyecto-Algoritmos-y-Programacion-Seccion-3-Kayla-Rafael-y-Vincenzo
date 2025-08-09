@@ -131,7 +131,52 @@ class CatalogoArte:
         pass
 
     def buscar_por_artista(self):
-        pass
+        """
+        Permite al usuario buscar obras por el nombre (o parte) del artista.
+        Muestra las obras guardadas en pantalla en caso de que se haya encontrado coincidencias en el nombre del artista.
+        """
+        artista = input('Ingresa el nombre del artista que quieres buscar: ')
+        while artista.isspace() or artista == "":
+            print('Debe ingresar caracteres validos.')
+            artista = input('Ingresa el nombre del artista que quieres buscar: ')
+    
+        print(f"Ingresó: {artista}.\nBuscando coincidencias")
+
+        respuesta = requests.get(f'https://collectionapi.metmuseum.org/public/collection/v1/search?artistOrCulture=true&q={artista}').json()
+        print(f'Hay {respuesta['total']} obras encontradas con los caracteres ingresados')
+
+        indice = 0
+        obras_encontradas = []
+        while True:
+            cantidad = input('Cuántas obras quiere traer (máximo 15): ')
+            while not cantidad.isnumeric() or (int(cantidad) not in range(1,16)):
+                print('Ingrese un número válido entre el 1 y 15')
+                cantidad = input('Cuántas obras quiere traer (máximo 15): ')
+            cantidad = int(cantidad)
+
+
+            while cantidad > 0 or indice >= len(respuesta['objectIDs']):
+                obra_encontrada = self.buscar_obra(respuesta['objectIDs'][indice])
+
+                if obra_encontrada and artista.lower() in obra_encontrada.artista.nombre.lower():
+                    print('La obra fue encontrada y el nombre del artista coincide con los caracteres ingresados.')
+                    obras_encontradas.append(obra_encontrada)
+                    cantidad -=1
+                
+                indice +=1
+            if indice >= len(respuesta['objectIDs']):
+                break
+
+            opcion = input(f'\nSe guardaron {len(obras_encontradas)} obras.\nSi desea añadir más obras, ingrese 1: ')
+            if opcion != '1':
+                break
+        
+        print('Obras encontradas:')
+        if len(obras_encontradas) == 0:
+            print('Lo lamentamos, no hay obras que cumplan con su coincidencia.')
+            return
+        for obra in obras_encontradas:
+            print(obra.mostrar())
 
 
     def inicio(self):
